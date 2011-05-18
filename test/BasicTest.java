@@ -62,7 +62,7 @@ public class BasicTest extends UnitTest {
    @Test
    public void testRecommendation() throws TasteException {
       int howMany = 4;
-      List<RecommendedItem> recommendation = Reco._internalRecommend(howMany, new User(0l), usersData());
+      List<RecommendedItem> recommendation = Reco._internalRecommend(howMany, 0l , usersData());
       assertTrue(recommendation.size() <= howMany);
       assertEquals(ITEM_9,(Long) recommendation.get(0).getItemID());
       assertEquals(ITEM_7,(Long)  recommendation.get(1).getItemID());
@@ -73,29 +73,29 @@ public class BasicTest extends UnitTest {
      @Test
    public void testNewUserNotInData() throws TasteException {
       int howMany = 4;
-      List<RecommendedItem> recommendation = Reco._internalRecommend(howMany, new User(123l), usersData());
-      assertTrue(recommendation.size() == howMany);
+      List<RecommendedItem> recommendation = Reco._internalRecommend(howMany, 123l, usersData());
+      assertTrue(recommendation.size() == 0);
    }
 
     @Test
    public void testNewUserInData() throws TasteException {
       int howMany = 4;
-      List<RecommendedItem> recommendation = Reco._internalRecommend(howMany, new User(10l), usersData());
-      assertTrue(recommendation.size() == howMany);
+      List<RecommendedItem> recommendation = Reco._internalRecommend(howMany, 10l, usersData());
+      assertTrue(recommendation.size() == 0);
    }
 
     @Test
    public void testUserWithOnlyOnePref() throws TasteException {
       int howMany = 4;
-      List<RecommendedItem> recommendation = Reco._internalRecommend(howMany, new User(11l), usersData());
+      List<RecommendedItem> recommendation = Reco._internalRecommend(howMany,11l, usersData());
       assertTrue(recommendation.size() == howMany);
    }
 
     @Test
    public void testUserWithOnlyOneUniquePref() throws TasteException {
       int howMany = 4;
-      List<RecommendedItem> recommendation = Reco._internalRecommend(howMany, new User(12l), usersData());
-      assertTrue(recommendation.size() == howMany);
+      List<RecommendedItem> recommendation = Reco._internalRecommend(howMany, 12l, usersData());
+      assertTrue(recommendation.size() == 0);
    }
 
    static final Long ITEM_1 = 10l;
