@@ -1,8 +1,9 @@
 <section id="liked-section" style="display:none;">
-   <h2 id="liked-name">${liked.name}</h2>
+   <article>
+      <h2 id="liked-name">${liked.name}</h2>
 
-   <p id="liked-description">${liked.description}</p>
-
+      <p id="liked-description">${liked.description}</p>
+   </article>
    <p>${liked.like} people like it and ${liked.ignore} ignore it<span
            class="not-connected">, and you ? signin to vote !</span> <a class='connected' id='like-button' href='#'></a>
       <a class='connected' id='ignore-button' href='#'></a></p>
@@ -21,30 +22,17 @@
 
 </section>
 
-<div id="disqus_thread"></div>
+<dialog id="disqus_thread"></dialog>
+<aside><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span
+        class="logo-disqus">Disqus</span></a></aside>
+
 <script type="text/javascript">
-   /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
    var disqus_shortname = 'recommendizr'; // required: replace example with your forum shortname
 
    // The following are highly recommended additional parameters. Remove the slashes in front to use.
    var disqus_identifier = 'liked${liked.id}';
    var disqus_url = '@@{Application.Liked(liked.id)}';
 
-   /* * * DON'T EDIT BELOW THIS LINE * * */
-   (function() {
-      var dsq = document.createElement('script');
-      dsq.type = 'text/javascript';
-      dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-   })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a>
-</noscript>
-<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
-
-
-<script type="text/javascript">
    require(["jquery", "widgets/login", "widgets/twostatesbutton"], function($, Login, TwoStatesButton) {
       $(document).ready(function() {
          $('#liked-description').html($('#liked-description').text());
@@ -71,11 +59,21 @@
          // Reinit Addthis.
          if (window.addthis) {
             window.addthis.ost = 0;
-            window.addthis.url= window.location;
-            window.addthis.title=document.title;
-            window.addthis.description=document.title;
+            window.addthis.url = window.location;
+            window.addthis.title = document.title;
+            window.addthis.description = document.title;
             window.addthis.ready();
          }
+
+
+         // Disqus Stuff
+         (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+         })();
 
       })
 

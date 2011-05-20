@@ -30,9 +30,8 @@ require.def("widgets/likedlist", ["jquery", "utils", "widgets/twostatesbutton"],
                   var ahref = $('<a>').addClass('histolink').attr('href', '#!/liked/' + el.id).attr('alt', el.description).text(el.name);
                   var li = $('<li>').attr('id', containerId + '-li-' + el.id);
                   $(li).append(ahref).append(likeOrUnlikeButton).append(ignoreButton);
-                  $(ahref).click(self.onClickLiked.execute.curry({limit:10, likedId:el.id}));
+                  //$(ahref).click(self.onClickLiked.execute.curry({limit:10, likedId:el.id}));
                   $('#' + containerId + '-list').append(li);
-
                   TwoStatesButton.Instance(containerId + "-list-a-"+ el.id, 'unlike', 'like', switchLikeResource, {likedId:el.id}, 'liked', el.liked, 'likebutton'+el.id);
                   TwoStatesButton.Instance(containerId + "-list-ignore-"+ el.id, 'unignore', 'ignore', switchIgnoreResource, {likedId:el.id}, 'ignored', el.ignored, 'ignorebutton'+el.id);
                });
@@ -44,7 +43,6 @@ require.def("widgets/likedlist", ["jquery", "utils", "widgets/twostatesbutton"],
             $('#' + containerId).html('<p>' + xhr.responseText + '</p>');
          };
 
-         self.onClickLiked = new Utils.Event();
          self.refresh();
       }
    };

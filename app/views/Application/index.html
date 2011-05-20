@@ -2,7 +2,7 @@
 #{set title:'RecommendizR - Share and get stuff you like' /}
 
 <section id="lists">
-   <section id="search">
+   <aside id="search">
       <form id="search-form" method="post" action="#">
          <fieldset>
             <legend>I'm looking for :</legend>
@@ -14,39 +14,43 @@
          </fieldset>
       </form>
 
-   </section>
+   </aside>
 
-   <section><h4>Search results :</h4>
-      <section class="list" id="search-results"></section>
-   </section>
+   <aside><h4>Search results :</h4>
 
-   <section>
+      <div class="list" id="search-results"></div>
+   </aside>
+
+   <aside>
       <h4>Stuff you should like :</h4>
 
-      <section class="connected list" id="user-recommendations"></section>
-      <section class="not-connected list">
+      <div class="connected list" id="user-recommendations"></div>
+      <div class="not-connected list">
          <p>To get personnal recommendations, based on what you like, please signin</p>
-      </section>
-   </section>
+      </div>
+   </aside>
 
-   <section>
+   <div>
       <h4>People who like that, also like :</h4>
-      <section id="related" class="list"></section>
-   </section>
 
-   <section>
+      <div id="related" class="list"></div>
+   </div>
+
+   <aside>
       <h4>Stuff you like recently :</h4>
 
-      <section class="connected list" id="recentlikedbyuser"></section>
-   </section>
+      <div class="connected list" id="recentlikedbyuser"></div>
+   </aside>
 
-   <section><h4>Popular stuff :</h4>
-      <section id="populars" class="list"></section>
-   </section>
+   <aside><h4>Popular stuff :</h4>
 
-   <section><h4>Recent stuff :</h4>
-      <section id="recents" class="list"></section>
-   </section>
+      <div id="populars" class="list"></div>
+   </aside>
+
+   <aside><h4>Recent stuff :</h4>
+
+      <div id="recents" class="list"></div>
+   </aside>
 </section>
 
 <section id="page_content" class="content">

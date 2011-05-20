@@ -55,6 +55,7 @@ require.def("widgets/twostatesbutton", ["jquery", "utils"], function($, Utils) {
 
          var event = getEvent(name);
          var myId = event.add(onBrotherChangeState);
+         self.onClickButton = getEvent(name);
 
          drawWidget(containerId, contentOK, contentKO, initialState);
          $('#' + containerId).click(switchButton);
