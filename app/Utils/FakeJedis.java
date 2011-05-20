@@ -3,6 +3,8 @@ package Utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +21,8 @@ public class FakeJedis implements JedisCommands {
 
    private Map<String, String> basicMap = new HashMap<String, String>();
    private Map<String, Map<String, String>> namedMap = new HashMap<String, Map<String, String>>();
+   private Map<String, Set<String>> namedSet = new HashMap<String, Set<String>>();
+   private Map<String, LinkedList<String>> namedLinkedList = new HashMap<String, LinkedList<String>>();
 
    public String set(String s, String s1) {
       return set(basicMap, s, s1);
@@ -142,7 +146,7 @@ public class FakeJedis implements JedisCommands {
          return false;
       }
 
-      return namedMap.get(s) != null;
+      return namedMap.get(s).get(s1) != null;
    }
 
    public Long hdel(String s, String s1) {
@@ -186,19 +190,41 @@ public class FakeJedis implements JedisCommands {
    }
 
    public Long rpush(String s, String s1) {
-      throw new UnsupportedOperationException();
+      if (namedLinkedList.get(s) == null) {
+         namedLinkedList.put(s, new LinkedList<String>());
+      }
+      if (namedLinkedList.get(s).contains(s1)) {
+         return 0l;
+      }
+      namedLinkedList.get(s).addLast(s1);
+      return 1l;
    }
 
    public Long lpush(String s, String s1) {
-      throw new UnsupportedOperationException();
+      if (namedLinkedList.get(s) == null) {
+         namedLinkedList.put(s, new LinkedList<String>());
+      }
+      if (namedLinkedList.get(s).contains(s1)) {
+         return 0l;
+      }
+      namedLinkedList.get(s).addFirst(s1);
+      return 1l;
    }
 
    public Long llen(String s) {
-      throw new UnsupportedOperationException();
+       if (namedLinkedList.get(s) == null) {
+         return 0l;
+      }
+
+      return Long.valueOf(namedLinkedList.get(s).size());
    }
 
    public List<String> lrange(String s, int i, int i1) {
-      throw new UnsupportedOperationException();
+      if (namedLinkedList.get(s) == null) {
+         return new LinkedList<String>();
+      } else {
+         return namedLinkedList.get(s).subList(i, Math.min(i1, namedLinkedList.get(s).size() - 1));
+      }
    }
 
    public String ltrim(String s, int i, int i1) {
@@ -226,15 +252,32 @@ public class FakeJedis implements JedisCommands {
    }
 
    public Long sadd(String s, String s1) {
-      throw new UnsupportedOperationException();
+      if (namedSet.get(s) == null) {
+         namedSet.put(s, new HashSet<String>());
+      }
+      if (namedSet.get(s).contains(s1)) {
+         return 0l;
+      }
+      namedSet.get(s).add(s1);
+      return 1l;
    }
 
    public Set<String> smembers(String s) {
-      throw new UnsupportedOperationException();
+      if (namedSet.get(s) == null) {
+         return new HashSet<String>();
+      }
+      return namedSet.get(s);
    }
 
    public Long srem(String s, String s1) {
-      throw new UnsupportedOperationException();
+      if (namedSet.get(s) == null) {
+         return 0l;
+      }
+      if (namedSet.get(s).contains(s1)) {
+         namedSet.get(s).remove(s1);
+         return 1l;
+      }
+      return 0l;
    }
 
    public String spop(String s) {
