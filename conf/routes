@@ -17,7 +17,7 @@ GET      /oauth/callback                        Security.oauthCallback
 GET		/liked/{id}								      Application.liked
 GET		/home    								      Application.home
 
-POST     /liked                                 Application.addLiked
+POST     /liked                                 Reco.addLiked
 
 # Secure routes
 GET      /logout         						      Secure.logout

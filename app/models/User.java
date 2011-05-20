@@ -1,24 +1,11 @@
 package models;
 
-import static Utils.Redis.newConnection;
-
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-
-import org.apache.commons.lang.StringUtils;
 
 import play.Logger;
 import play.data.validation.Email;
-import play.data.validation.Equals;
-import play.data.validation.IsTrue;
-import play.data.validation.MinSize;
-import play.data.validation.Required;
 import play.db.jpa.Model;
-import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCommands;
 
 /**
  * @author Jean-Baptiste Lemée
@@ -57,7 +44,7 @@ public class User extends Model {
       return User.find("from User z where twitter=:twitter").bind("twitter", twitter.trim().toLowerCase()).first();
    }
 
-   public static User findByMailOrCreate(String userEmail, Jedis jedis) {
+   public static User findByMailOrCreate(String userEmail, JedisCommands jedis) {
       User user = findByMail(userEmail);
       if (user == null) {
          Logger.info("User creation for email : " + userEmail);
@@ -68,7 +55,7 @@ public class User extends Model {
       return user;
    }
 
-   public static User findByTwitterOrCreate(String twitterName, Jedis jedis) {
+   public static User findByTwitterOrCreate(String twitterName, JedisCommands jedis) {
       User user = findByTwitter(twitterName);
       if (user == null) {
          Logger.info("User creation for twitter : " + twitterName);
@@ -85,7 +72,7 @@ public class User extends Model {
       return user;
    }
 
-   public static void create(Jedis jedis, User user) {
+   public static void create(JedisCommands jedis, User user) {
       user.save();
       jedis.sadd("users", String.valueOf(user.id));
    }

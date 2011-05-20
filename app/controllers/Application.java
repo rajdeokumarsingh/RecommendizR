@@ -16,6 +16,7 @@ import play.Logger;
 import play.db.jpa.JPA;
 import play.mvc.Controller;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCommands;
 import services.SearchService;
 
 import javax.annotation.Nullable;
@@ -46,6 +47,9 @@ public class Application extends Controller {
 
    public static void liked(Long id) {
       Liked liked = findLiked(id);
+      if(liked == null){
+         notFound();
+      }
       User user = Security.connectedUser();
       Liked.fill(liked, user, newConnection());
       render(liked);
@@ -72,7 +76,7 @@ public class Application extends Controller {
 
    public static void lastAdded(int howMany) {
       User user = Security.connectedUser();
-      Jedis jedis = newConnection();
+      JedisCommands jedis = newConnection();
       Collection<Liked> list = likedList(user, jedis, "recents");
       renderJSON(list);
    }
@@ -81,7 +85,7 @@ public class Application extends Controller {
       if (likedId == null) {
          renderJSON(Sets.<Object>newHashSet());
       }
-      Jedis jedis = newConnection();
+      JedisCommands jedis = newConnection();
       int trainUsersLimit = 100;
       Long userId = 0l; // fake user.
       FastByIDMap<PreferenceArray> usersData = Reco.usersData(jedis, trainUsersLimit, new HashSet<String>());
@@ -101,7 +105,7 @@ public class Application extends Controller {
       renderJSON(likedSet);
    }
 
-   static <T extends Collection<Liked>> T removeIgnored(T likedCol, User user, Jedis jedis) {
+   static <T extends Collection<Liked>> T removeIgnored(T likedCol, User user, JedisCommands jedis) {
       if (user == null || likedCol == null) {
          return likedCol;
       } else {
@@ -118,7 +122,7 @@ public class Application extends Controller {
 
    public static void mostLiked(int howMany) {
       User user = Security.connectedUser();
-      Jedis jedis = newConnection();
+      JedisCommands jedis = newConnection();
       List<Liked> list = Lists.newArrayList(likedList(user, jedis, "popular"));
       Collections.sort(list, Collections.<Liked>reverseOrder());
       renderJSON(list);
@@ -127,7 +131,7 @@ public class Application extends Controller {
    public static void recentUserLiked(int start, int stop) {
       User user = Security.connectedUser();
       if (user != null) {
-         Jedis jedis = newConnection();
+         JedisCommands jedis = newConnection();
          DEFAULT_START = 0;
          DEFAULT_STOP = 10;
          List<Liked> list = Lists.newArrayList(likedFifoList(user, jedis, "user2:" + user.getId() + ":recents", start, stop));
@@ -149,7 +153,7 @@ public class Application extends Controller {
       }
    }
 
-   static Collection<Liked> likedList(User user, Jedis jedis, String listName) {
+   static Collection<Liked> likedList(User user, JedisCommands jedis, String listName) {
       final Map<String, String> relevantLikedMap = jedis.hgetAll(listName);
       if (relevantLikedMap == null || relevantLikedMap.size() == 0) {
          return new ArrayList<Liked>();
@@ -172,7 +176,7 @@ public class Application extends Controller {
     * @param stop
     * @return
     */
-   static Collection<Liked> likedFifoList(User user, Jedis jedis, String listName, int start, int stop) {
+   static Collection<Liked> likedFifoList(User user, JedisCommands jedis, String listName, int start, int stop) {
       final List<String> relevantLikedMap = jedis.lrange(listName, start, stop);
       if (relevantLikedMap == null || relevantLikedMap.size() == 0) {
          return new ArrayList<Liked>();

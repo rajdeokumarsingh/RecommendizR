@@ -14,7 +14,7 @@ import org.apache.mahout.cf.taste.recommender.Recommender;
 import play.Logger;
 import play.mvc.Controller;
 import play.mvc.With;
-import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCommands;
 import services.CrossingBooleanRecommenderBuilder;
 import services.CrossingDataModelBuilder;
 import services.SearchService;
@@ -30,7 +30,7 @@ public class Reco extends Controller {
 
    public static void like(Long likedId) {
       User user = Security.connectedUser();
-      Jedis jedis = newConnection();
+      JedisCommands jedis = newConnection();
       if (!Liked.isLiked(likedId, user, jedis)) {
          doLike(likedId, user, jedis);
       }
@@ -42,7 +42,7 @@ public class Reco extends Controller {
 
    public static void ignore(Long likedId) {
       User user = Security.connectedUser();
-      Jedis jedis = newConnection();
+      JedisCommands jedis = newConnection();
       if (!Liked.isIgnored(likedId, user, jedis)) {
          doIgnore(likedId, user, jedis);
       }
@@ -53,7 +53,7 @@ public class Reco extends Controller {
       renderJSON(Liked.fill(Collections.singleton(findLiked(likedId)), user, jedis));
    }
 
-   static void doLike(Long likedId, User user, Jedis jedis) {
+   static void doLike(Long likedId, User user, JedisCommands jedis) {
       Long count = jedis.hincrBy("l" + likedId, "count", 1);
       manageRelevantList(likedId, count, jedis, "popular", 10);
       manageRelevantList(likedId, System.currentTimeMillis(), jedis, "recents", 10);
@@ -64,12 +64,12 @@ public class Reco extends Controller {
       jedis.hset("l" + likedId, "user:u" + user.id, String.valueOf(user.id));
    }
 
-   static void doIgnore(Long likedId, User user, Jedis jedis) {
+   static void doIgnore(Long likedId, User user, JedisCommands jedis) {
       jedis.hincrBy("l" + likedId, "countIgnore", 1);
       jedis.hset("ignore:u" + user.id, "like:l" + likedId, String.valueOf(likedId));
    }
 
-   static void manageRelevantList(Long likedId, Long score, Jedis jedis, String listName, int size) {
+   static void manageRelevantList(Long likedId, Long score, JedisCommands jedis, String listName, int size) {
       Map<String, String> mostRelevants = jedis.hgetAll(listName);
       if (mostRelevants == null || mostRelevants.size() < size) {
          jedis.hset(listName, String.valueOf(likedId), String.valueOf(score));
@@ -82,11 +82,11 @@ public class Reco extends Controller {
       }
    }
 
-   static void manageFifoList(Long likedId, Long score, Jedis jedis, String listName) {
+   static void manageFifoList(Long likedId, Long score, JedisCommands jedis, String listName) {
       jedis.lpush(listName, likedId.toString());
     }
 
-   static Map.Entry<String, String> getLessRelevant(Map<String, String> mostPopulars, Jedis jedis) {
+   static Map.Entry<String, String> getLessRelevant(Map<String, String> mostPopulars, JedisCommands jedis) {
       Map.Entry<String, String> lessLiked = null;
       for (Map.Entry<String, String> entry : mostPopulars.entrySet()) {
          if (lessLiked == null || getLesserXThanY(entry.getValue(), lessLiked.getValue())) {
@@ -105,12 +105,12 @@ public class Reco extends Controller {
 
    public static void unlike(Long likedId) {
       User user = Security.connectedUser();
-      Jedis jedis = newConnection();
+      JedisCommands jedis = newConnection();
       doUnlike(likedId, user, jedis);
       renderJSON(Liked.fill(Collections.singleton(findLiked(likedId)), user, jedis));
    }
 
-   static void doUnlike(Long likedId, User user, Jedis jedis) {
+   static void doUnlike(Long likedId, User user, JedisCommands jedis) {
       jedis.hincrBy("l" + likedId, "count", -1);
       jedis.hdel("u" + user.id, "like:l" + likedId);
       jedis.hdel("l" + likedId, "user:u" + user.id);
@@ -118,19 +118,19 @@ public class Reco extends Controller {
 
    public static void unIgnore(Long likedId) {
       User user = Security.connectedUser();
-      Jedis jedis = newConnection();
+      JedisCommands jedis = newConnection();
       doUnignore(likedId, user, jedis);
       renderJSON(Liked.fill(Collections.singleton(findLiked(likedId)), user, jedis));
    }
 
-   static void doUnignore(Long likedId, User user, Jedis jedis) {
+   static void doUnignore(Long likedId, User user, JedisCommands jedis) {
       jedis.hincrBy("l" + likedId, "countIgnore", -1);
       jedis.hdel("ignore:u" + user.id, "like:l" + likedId);
    }
 
    public static void switchLike(Long likedId) {
       User user = Security.connectedUser();
-      Jedis jedis = newConnection();
+      JedisCommands jedis = newConnection();
       if (Liked.isLiked(likedId, user, jedis)) {
          doUnlike(likedId, user, jedis);
       } else {
@@ -144,7 +144,7 @@ public class Reco extends Controller {
 
    public static void switchIgnore(Long likedId) {
       User user = Security.connectedUser();
-      Jedis jedis = newConnection();
+      JedisCommands jedis = newConnection();
       if (Liked.isIgnored(likedId, user, jedis)) {
          doUnignore(likedId, user, jedis);
       } else {
@@ -163,7 +163,7 @@ public class Reco extends Controller {
       liked.transformPlainUrlToHtml();
       liked.save();
       User user = Security.connectedUser();
-      Jedis jedis = newConnection();
+      JedisCommands jedis = newConnection();
       doLike(liked.id, user, jedis);
       try {
          SearchService.addToIndex(liked);
@@ -185,7 +185,7 @@ public class Reco extends Controller {
 
    public static void recommendUser(int limit) throws TasteException {
       User user = Security.connectedUser();
-      Jedis jedis = newConnection();
+      JedisCommands jedis = newConnection();
       int trainUsersLimit = 100;
       Map<String, String> ignoreList = jedis.hgetAll("ignore:u" + user.id);
       FastByIDMap<PreferenceArray> usersData = usersData(jedis, trainUsersLimit, ignoreList.keySet());
@@ -209,7 +209,7 @@ public class Reco extends Controller {
       return recommender.recommend(userId, howMany, null);
    }
 
-   static FastByIDMap<PreferenceArray> usersData(Jedis jedis, int limit, Set<String> ignoredKeys) {
+   static FastByIDMap<PreferenceArray> usersData(JedisCommands jedis, int limit, Set<String> ignoredKeys) {
       FastByIDMap<PreferenceArray> result = new FastByIDMap<PreferenceArray>();
       Set<String> usersIds = jedis.smembers("users");
       int numUser = 0;
@@ -225,7 +225,7 @@ public class Reco extends Controller {
       return result;
    }
 
-   static BooleanUserPreferenceArray getPreferences(Jedis jedis, int numUser, Long userId, Set<String> ignoredKeys) {
+   static BooleanUserPreferenceArray getPreferences(JedisCommands jedis, int numUser, Long userId, Set<String> ignoredKeys) {
       Map<String, String> likedIds = jedis.hgetAll("u" + userId);
       BooleanUserPreferenceArray preferenceArray = new BooleanUserPreferenceArray(likedIds.size());
       preferenceArray.setUserID(numUser, userId);

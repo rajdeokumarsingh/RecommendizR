@@ -2,6 +2,7 @@ package Utils;
 
 import play.Play;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCommands;
 import redis.clients.jedis.JedisShardInfo;
 
 /**
@@ -17,7 +18,10 @@ public class Redis {
       redisConfig.setPassword(Play.configuration.getProperty("redis.password", "foobared"));
    }
 
-   public static Jedis newConnection(){
+   public static JedisCommands newConnection() {
+      if (!Play.configuration.getProperty("application.mode").equalsIgnoreCase("prod")) {
+         return new FakeJedis();
+      }
       return new Jedis(redisConfig);
    }
 }

@@ -5,7 +5,6 @@ import java.util.List;
 
 import models.User;
 import play.Play;
-import play.data.validation.Required;
 import play.libs.Crypto;
 import play.mvc.Before;
 import play.mvc.Controller;

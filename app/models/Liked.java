@@ -12,7 +12,7 @@ import play.data.validation.MaxSize;
 import play.data.validation.MinSize;
 import play.data.validation.Required;
 import play.db.jpa.Model;
-import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCommands;
 
 /**
  * @author Jean-Baptiste Lemée
@@ -43,13 +43,13 @@ public class Liked extends Model implements Comparable<Liked> {
       return name;
    }
 
-   public static boolean isLiked(Long likedId, User user, Jedis jedis) {
+   public static boolean isLiked(Long likedId, User user, JedisCommands jedis) {
 
       boolean r = null != jedis.hget("u" + user.id, "like:l" + likedId);
       return r;
    }
 
-   public static Collection<Liked> fill(Collection<Liked> likedList, User user, Jedis jedis) {
+   public static Collection<Liked> fill(Collection<Liked> likedList, User user, JedisCommands jedis) {
       if (user != null) {
          for (Liked item : likedList) {
             fill(item, user, jedis);
@@ -58,7 +58,7 @@ public class Liked extends Model implements Comparable<Liked> {
       return likedList;
    }
 
-   public static Liked fill(Liked liked, User user, Jedis jedis) {
+   public static Liked fill(Liked liked, User user, JedisCommands jedis) {
       if (user != null) {
          liked.liked = isLiked(liked.getId(), user, jedis);
          liked.ignored = isIgnored(liked.getId(), user, jedis);
@@ -68,7 +68,7 @@ public class Liked extends Model implements Comparable<Liked> {
       return liked;
    }
 
-   public static boolean isIgnored(Long likedId, User user, Jedis jedis) {
+   public static boolean isIgnored(Long likedId, User user, JedisCommands jedis) {
       boolean r = null != jedis.hget("ignore:u" + user.id, "like:l" + likedId);
       return r;
    }
