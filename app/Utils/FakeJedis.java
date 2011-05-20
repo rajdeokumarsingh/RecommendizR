@@ -2,12 +2,12 @@ package Utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import redis.clients.jedis.BinaryClient;
 import redis.clients.jedis.JedisCommands;
@@ -19,10 +19,10 @@ import redis.clients.jedis.Tuple;
  */
 public class FakeJedis implements JedisCommands {
 
-   private Map<String, String> basicMap = new HashMap<String, String>();
-   private Map<String, Map<String, String>> namedMap = new HashMap<String, Map<String, String>>();
-   private Map<String, Set<String>> namedSet = new HashMap<String, Set<String>>();
-   private Map<String, LinkedList<String>> namedLinkedList = new HashMap<String, LinkedList<String>>();
+   private static Map<String, String> basicMap = new ConcurrentHashMap<String, String>();
+   private static Map<String, Map<String, String>> namedMap = new ConcurrentHashMap<String, Map<String, String>>();
+   private static Map<String, Set<String>> namedSet = new ConcurrentHashMap<String, Set<String>>();
+   private static Map<String, LinkedList<String>> namedLinkedList = new ConcurrentHashMap<String, LinkedList<String>>();
 
    public String set(String s, String s1) {
       return set(basicMap, s, s1);
@@ -102,7 +102,7 @@ public class FakeJedis implements JedisCommands {
 
    public Long hset(String s, String s1, String s2) {
       if (namedMap.get(s) == null) {
-         namedMap.put(s, new HashMap<String, String>());
+         namedMap.put(s, new ConcurrentHashMap<String, String>());
       }
       Map<String, String> sMap = namedMap.get(s);
       if (sMap.get(s1) == null) {
@@ -135,7 +135,7 @@ public class FakeJedis implements JedisCommands {
 
    public Long hincrBy(String s, String s1, long l) {
       if (namedMap.get(s) == null) {
-         namedMap.put(s, new HashMap<String, String>());
+         namedMap.put(s, new ConcurrentHashMap<String, String>());
       }
       Map<String, String> sMap = namedMap.get(s);
       return incrBy(sMap, s1, l);
@@ -183,7 +183,7 @@ public class FakeJedis implements JedisCommands {
 
    public Map<String, String> hgetAll(String s) {
       if (namedMap.get(s) == null) {
-         return new HashMap<String, String>();
+         return new ConcurrentHashMap<String, String>();
       }
 
       return namedMap.get(s);
