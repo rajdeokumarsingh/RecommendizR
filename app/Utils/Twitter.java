@@ -8,8 +8,6 @@ import play.Play;
 import play.libs.WS;
 import play.libs.XML;
 import play.modules.oauthclient.OAuthClient;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisShardInfo;
 
 /**
  * @author Jean-Baptiste lemée

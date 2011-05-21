@@ -16,9 +16,9 @@
 
    </aside>
 
-   <aside><h4>Search results :</h4>
+   <aside id="search-results" style="display:none;"><h4>Search results :</h4>
 
-      <div class="list" id="search-results"></div>
+      <div class="list" id="search-results-list"></div>
    </aside>
 
    <aside>
@@ -36,10 +36,15 @@
       <div id="related" class="list"></div>
    </div>
 
-   <aside>
+   <aside class="connected">
       <h4>Stuff you like recently :</h4>
 
       <div class="connected list" id="recentlikedbyuser"></div>
+   </aside>
+
+   <aside><h4>Recent stuff :</h4>
+
+      <div id="recents" class="list"></div>
    </aside>
 
    <aside><h4>Popular stuff :</h4>
@@ -47,10 +52,6 @@
       <div id="populars" class="list"></div>
    </aside>
 
-   <aside><h4>Recent stuff :</h4>
-
-      <div id="recents" class="list"></div>
-   </aside>
 </section>
 
 <section id="page_content" class="content">
@@ -63,8 +64,9 @@
       $(document).ready(function() {
          $('#search-button').click(function(e) {
             e.preventDefault();
+            $('#search-results').show();
             var searchText = $('#search-input').val();
-            LikedList.Instance('search-results', '@{Application.search()}', {limit:10,text: searchText}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
+            LikedList.Instance('search-results-list', '@{Application.search()}', {limit:10,text: searchText}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
          });
          var recentsLiked = new LikedList.Instance('recents', '@{Application.lastAdded()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
          var popularsLiked = new LikedList.Instance('populars', '@{Application.mostLiked()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
