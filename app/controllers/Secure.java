@@ -18,11 +18,11 @@ public class Secure extends Controller {
    @Before(unless = {"login", "authenticate", "logout"})
    static void checkAccess() throws Throwable {
       // Authent
-      if (!session.contains(LOGIN_KEY) || Security.invoke("connectedUser") == null) {
+      if (Security.invoke("connectedUser") == null) {
          session.clear();
          response.removeCookie("rememberme");
          flash.put("url", request.method == "GET" ? request.url : "/"); // seems a good default
-         login();
+         forbidden();
       }
       // Checks
       Check check = getActionAnnotation(Check.class);

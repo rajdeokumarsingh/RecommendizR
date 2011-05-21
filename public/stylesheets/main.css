@@ -15,7 +15,7 @@ section {
    margin: 20px;
 }
 
-section#page, section.list {
+section#page, div.list {
    margin: 0;
    padding: 0;
 }
@@ -24,7 +24,7 @@ section#page {
    display:block;
 }
 
-section#lists, header section#welcome, header section#login {
+section#lists, header aside#welcome, header aside#login {
    float: right;
 }
 
@@ -32,7 +32,7 @@ section#lists {
    width: 45%;
 }
 
-section#page_content, header section#menu {
+section#page_content, header nav#menu {
    float: left;
    width: 45%;
 }
