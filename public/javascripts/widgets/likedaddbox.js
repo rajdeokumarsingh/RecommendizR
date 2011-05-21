@@ -18,8 +18,8 @@ require.def("widgets/likedaddbox", ["jquery", "utils"], function($, Utils) {
             });
          });
 
-         var onSuccess = function(containerId) {
-            self.onLikedAdded.execute();
+         var onSuccess = function(containerId, newLiked) {
+            self.onLikedAdded.execute(newLiked);
             $('#' + containerId + '-input-name').val("");
             $('#' + containerId + '-input-description').val("");
             $('#' + containerId+"-error").hide();

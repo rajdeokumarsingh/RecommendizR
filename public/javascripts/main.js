@@ -17,7 +17,6 @@ require(["jquery", "utils", "jquery.history", "openid-jquery", "functional"], fu
 
    var load = function(href) {
       href = href.replace(/^!/, '');
-
       $.ajax({
          url: href,
          success: setContentPage,
@@ -25,8 +24,9 @@ require(["jquery", "utils", "jquery.history", "openid-jquery", "functional"], fu
             // google analytics here.
          }
       });
+   };
 
-   }
+   self.loadPage = load;
 
    $(document).ready(function() {
       Functional.install();

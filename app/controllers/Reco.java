@@ -170,7 +170,7 @@ public class Reco extends Controller {
       } catch (IOException e) {
          Logger.error(e, e.getMessage());
       }
-      renderJSON(Liked.fill(Collections.singleton(liked), user, jedis));
+      renderJSON(Liked.fill(liked, user, jedis));
    }
 
    public static boolean isLiked(Long likedId) {

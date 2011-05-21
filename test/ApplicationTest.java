@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import play.Play;
 import play.libs.Crypto;
-import play.libs.Time;
 import play.mvc.Http;
 import play.test.*;
 import play.mvc.Http.*;
@@ -73,7 +72,7 @@ public class ApplicationTest extends FunctionalTest {
       assertIsOk(response);
       assertContentType("application/json", response);
       assertCharset("utf-8", response);
-      assertContentEquals("[{\"name\":\"fakename\",\"description\":\"fakedescription\",\"liked\":true,\"ignored\":false,\"like\":1,\"ignore\":0,\"id\":1}]", response);
+      assertContentEquals("{\"name\":\"fakename\",\"description\":\"fakedescription\",\"liked\":true,\"ignored\":false,\"like\":1,\"ignore\":0,\"id\":1}", response);
    }
 
    @Test
