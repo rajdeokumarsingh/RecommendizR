@@ -31,7 +31,7 @@ require.def("widgets/likedlist", ["jquery", "utils", "widgets/twostatesbutton"],
                   $(li).append(ahref).append(likeOrUnlikeButton).append(ignoreButton);
                   $('#' + containerId + '-list').append(li);
                   TwoStatesButton.Instance(containerId + "-list-a-" + el.id, 'unlike', 'like', switchLikeResource, {likedId:el.id}, 'liked', el.liked, 'likebutton' + el.id);
-                  TwoStatesButton.Instance(containerId + "-list-ignore-" + el.id, 'unignore', 'ignore', switchIgnoreResource, {likedId:el.id}, 'ignored', el.ignored, 'ignorebutton' + el.id);
+                  TwoStatesButton.Instance(containerId + "-list-ignore-" + el.id, 'unignore', 'ignore', switchIgnoreResource, {likedId:el.id}, 'ignored', el.ignored, 'likebutton' + el.id);
                });
 
             }

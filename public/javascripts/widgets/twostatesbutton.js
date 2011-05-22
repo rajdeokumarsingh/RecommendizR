@@ -30,7 +30,7 @@ require.def("widgets/twostatesbutton", ["jquery", "utils"], function($, Utils) {
          var onBrotherChangeState = function(value) {
             if (value.id == myId) return;
             else {
-               drawWidget(containerId, contentOK, contentKO, value.state);
+               drawWidget(containerId, contentOK, contentKO, value.obj[stateAttrName]);
             }
          }
 
@@ -50,7 +50,7 @@ require.def("widgets/twostatesbutton", ["jquery", "utils"], function($, Utils) {
          var onSuccessSwitch = function(responseObject) {
             var widgetState = responseObject[0][stateAttrName];
             drawWidget(containerId, contentOK, contentKO, widgetState);
-            event.execute({id:myId, state:widgetState});
+            event.execute({id:myId, obj:responseObject[0]});
          };
 
          var event = getEvent(name);

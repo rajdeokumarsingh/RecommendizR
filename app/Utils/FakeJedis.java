@@ -37,6 +37,10 @@ public class FakeJedis implements JedisCommands {
       return basicMap.get(s);
    }
 
+   private String get(Map<String, String> map, String s) {
+      return map.get(s);
+   }
+
    public Boolean exists(String s) {
       throw new UnsupportedOperationException();
    }
@@ -82,7 +86,7 @@ public class FakeJedis implements JedisCommands {
    }
 
    private Long incrBy(Map<String, String> map, String s, long l) {
-      long init = get(s) == null ? 0l : Long.valueOf(get(s));
+      long init = get(map, s) == null ? 0l : Long.valueOf(get(map, s));
       long newValue = init + l;
       set(map, s, String.valueOf(newValue));
       return newValue;
@@ -212,7 +216,7 @@ public class FakeJedis implements JedisCommands {
    }
 
    public Long llen(String s) {
-       if (namedLinkedList.get(s) == null) {
+      if (namedLinkedList.get(s) == null) {
          return 0l;
       }
 
