@@ -1,7 +1,9 @@
 package controllers;
 
+import com.google.common.collect.Lists;
 import models.Liked;
 import models.User;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.eval.RecommenderBuilder;
@@ -11,6 +13,7 @@ import org.apache.mahout.cf.taste.model.DataModel;
 import org.apache.mahout.cf.taste.model.PreferenceArray;
 import org.apache.mahout.cf.taste.recommender.RecommendedItem;
 import org.apache.mahout.cf.taste.recommender.Recommender;
+
 import play.Logger;
 import play.mvc.Controller;
 import play.mvc.With;
@@ -55,9 +58,9 @@ public class Reco extends Controller {
 
    static void doLike(Long likedId, User user, JedisCommands jedis) {
       Long count = jedis.hincrBy("l" + likedId, "count", 1);
-      manageRelevantList(likedId, count, jedis, "popular", 10);
-      manageRelevantList(likedId, System.currentTimeMillis(), jedis, "recents", 10);
-      manageFifoList(likedId, System.currentTimeMillis(), jedis, "user2:" + user.getId() + ":recents");
+      manageRelevantList(likedId, count, jedis, "popular", 100);
+      manageRelevantList(likedId, System.currentTimeMillis(), jedis, "recents", 100);
+      manageRelevantList(likedId, System.currentTimeMillis(), jedis, "user:" + user.getId() + ":recents", 100);
       jedis.hset("u" + user.id, "like:l" + likedId, String.valueOf(likedId));
 
       // Useless ?
@@ -81,10 +84,6 @@ public class Reco extends Controller {
          }
       }
    }
-
-   static void manageFifoList(Long likedId, Long score, JedisCommands jedis, String listName) {
-      jedis.lpush(listName, likedId.toString());
-    }
 
    static Map.Entry<String, String> getLessRelevant(Map<String, String> mostPopulars, JedisCommands jedis) {
       Map.Entry<String, String> lessLiked = null;
@@ -241,6 +240,17 @@ public class Reco extends Controller {
 
    protected static boolean userAlreadyExists(User user) {
       return (null != Security.findUser(user.email));
+   }
+
+   public static void lastAdded(int howMany) {
+
+   }
+
+   public static void recentUserLiked(int start, int stop) {
+      User user = Security.connectedUser();
+      JedisCommands jedis = newConnection();
+      Collection<Liked> list = Application.likedList(user, jedis, "user:" + user.getId() + ":recents");
+      renderJSON(list);
    }
 
 }

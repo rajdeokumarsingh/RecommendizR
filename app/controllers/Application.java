@@ -41,7 +41,6 @@ public class Application extends Controller {
       render();
    }
 
-
    public static void liked(Long id) {
       Liked liked = findLiked(id);
       if(liked == null){
@@ -125,54 +124,14 @@ public class Application extends Controller {
       renderJSON(list);
    }
 
-   public static void recentUserLiked(int start, int stop) {
-      User user = Security.connectedUser();
-      if (user != null) {
-         JedisCommands jedis = newConnection();
-         List<Liked> list = Lists.newArrayList(likedFifoList(user, jedis, "user2:" + user.getId() + ":recents", start, stop));
-         Collections.reverse(list);
-         renderJSON(list);
-      }
-   }
-
-   static Collection<Liked> likedList(User user, Jedis jedis, String listName, Integer start, Integer stop) {
-      final Map<String, String> relevantLikedMap = jedis.hgetAll(listName);
-      if (relevantLikedMap == null || relevantLikedMap.size() == 0) {
-         return new ArrayList<Liked>();
-      } else {
-         List<Liked> likedList = likedFromRelevantIds(relevantLikedMap.keySet());
-         removeIgnored(likedList, user, jedis);
-         Liked.fill(likedList, user, jedis);
-         sortRelevantList(relevantLikedMap, likedList);
-         return likedList;
-      }
-   }
-
    static Collection<Liked> likedList(User user, JedisCommands jedis, String listName) {
       final Map<String, String> relevantLikedMap = jedis.hgetAll(listName);
       if (relevantLikedMap == null || relevantLikedMap.size() == 0) {
          return new ArrayList<Liked>();
       } else {
          List<Liked> likedList = likedFromRelevantIds(relevantLikedMap.keySet());
-         removeIgnored(likedList, user, jedis);
          Liked.fill(likedList, user, jedis);
          sortRelevantList(relevantLikedMap, likedList);
-         return likedList;
-      }
-   }
-
-   /**
-    * Be careful, stop is included : 0-3 will return 4 elements (0 1 2 3).
-    *
-    */
-   static Collection<Liked> likedFifoList(User user, JedisCommands jedis, String listName, int start, int stop) {
-      final List<String> relevantLikedMap = jedis.lrange(listName, start, stop);
-      if (relevantLikedMap == null || relevantLikedMap.size() == 0) {
-         return new ArrayList<Liked>();
-      } else {
-         List<Liked> likedList = likedFromRelevantIds(relevantLikedMap);
-         removeIgnored(likedList, user, jedis);
-         Liked.fill(likedList, user, jedis);
          return likedList;
       }
    }
