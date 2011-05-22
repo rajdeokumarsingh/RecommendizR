@@ -29,9 +29,6 @@ import static org.apache.commons.collections.CollectionUtils.isEmpty;
 
 public class Application extends Controller {
 
-   private static int DEFAULT_START;
-   private static int DEFAULT_STOP;
-
    public static void index() {
       render();
    }
@@ -132,8 +129,6 @@ public class Application extends Controller {
       User user = Security.connectedUser();
       if (user != null) {
          JedisCommands jedis = newConnection();
-         DEFAULT_START = 0;
-         DEFAULT_STOP = 10;
          List<Liked> list = Lists.newArrayList(likedFifoList(user, jedis, "user2:" + user.getId() + ":recents", start, stop));
          Collections.reverse(list);
          renderJSON(list);
@@ -169,12 +164,6 @@ public class Application extends Controller {
    /**
     * Be careful, stop is included : 0-3 will return 4 elements (0 1 2 3).
     *
-    * @param user
-    * @param jedis
-    * @param listName
-    * @param start
-    * @param stop
-    * @return
     */
    static Collection<Liked> likedFifoList(User user, JedisCommands jedis, String listName, int start, int stop) {
       final List<String> relevantLikedMap = jedis.lrange(listName, start, stop);
@@ -193,7 +182,7 @@ public class Application extends Controller {
          public int compare(Liked l1, Liked l2) {
             Long scoreL1 = Long.valueOf(relevantLikedMap.get(String.valueOf(l1.id)));
             Long scoreL2 = Long.valueOf(relevantLikedMap.get(String.valueOf(l2.id)));
-            return scoreL1 == scoreL2 ? 0 : scoreL1 > scoreL2 ? -1 : 1;
+            return scoreL1.equals(scoreL2) ? 0 : scoreL1 > scoreL2 ? -1 : 1;
          }
       });
    }

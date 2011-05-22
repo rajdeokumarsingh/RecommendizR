@@ -1,6 +1,5 @@
 package controllers;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,10 +7,7 @@ import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import play.Play;
-import play.libs.Crypto;
 import play.mvc.Http;
-import play.test.*;
 import play.mvc.Http.*;
 
 public class ApplicationTest extends ControllersTest {

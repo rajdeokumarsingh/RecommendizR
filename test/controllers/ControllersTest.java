@@ -16,7 +16,7 @@ import play.test.FunctionalTest;
 /**
  * @author Jean-Baptiste lemée
  */
-public class ControllersTest extends FunctionalTest {
+public abstract class ControllersTest extends FunctionalTest {
 
    @BeforeClass
    public static void init() {
