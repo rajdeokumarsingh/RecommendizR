@@ -15,7 +15,7 @@ import redis.clients.jedis.SortingParams;
 import redis.clients.jedis.Tuple;
 
 /**
- * @author Jean-Baptiste lemée
+ * @author Jean-Baptiste lemÃ©e
  */
 public class FakeJedis implements JedisCommands {
 

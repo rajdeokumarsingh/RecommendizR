@@ -1,5 +1,6 @@
 import java.util.List;
 
+import controllers.ApplicationTest;
 import controllers.Reco;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.eval.IRStatistics;
@@ -17,7 +18,6 @@ import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import models.User;
 import play.test.*;
 import services.CrossingBooleanRecommenderBuilder;
 import services.CrossingDataModelBuilder;

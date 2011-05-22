@@ -8,17 +8,20 @@ import play.mvc.Controller;
 import play.mvc.With;
 
 /**
- * @author Jean-Baptiste lemée
+ * @author Jean-Baptiste lemÃ©e
  */
 @With(Secure.class)
 public class Admin extends Controller {
 
-   static public void indexing() {
+   @Check("jblemee@gmail.com")
+   public static void indexing() {
       try {
          SearchService.buildIndexes();
-        } catch (IOException e) {
+      } catch (IOException e) {
          Logger.error(e, e.getMessage());
          error(e.getMessage());
       }
+
+      renderHtml("OK");
    }
 }

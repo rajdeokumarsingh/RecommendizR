@@ -4,3 +4,7 @@
  User(test):
    email: test@test.com
    twitter: test
+
+ User(admin):
+   email: jblemee@gmail.com
+   twitter: jblemee

@@ -18,6 +18,8 @@ import play.mvc.Router;
 
 public class Security extends Secure.Security {
 
+   private static final String LOGIN_KEY = "username";
+
    /**
     * Le parametre action ne sert à rien ?
     */
@@ -143,8 +145,6 @@ public class Security extends Secure.Security {
    }
 
    static boolean check(String profile) {
-      if (profile.equals("jblemee"))
-         return session.get("username").equals("jblemee");
-      return false;
+      return profile.equals(session.get(LOGIN_KEY));
    }
 }
