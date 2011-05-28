@@ -109,7 +109,7 @@ public class Application extends RecommendizRController {
       AtomFeedConstructor feedConstructor = newFeed()
               .withEntries(getEntries(likedSet))
               .withLinks(self(Router.getFullUrl("Application.searchfeed", parametersMap)));
-      renderAtomXml(feedConstructor.value());
+      renderAtomJSon(feedConstructor.value());
    }
 
    private static List<SyndEntry> getEntries(Iterable<Liked> likedList) {

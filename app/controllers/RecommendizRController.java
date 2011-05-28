@@ -1,9 +1,9 @@
 package controllers;
 
+import Utils.feed.RenderAtomJSon;
 import Utils.feed.RenderAtomXml;
 import com.sun.syndication.feed.synd.SyndFeed;
 import play.mvc.Controller;
-import play.mvc.results.RenderXml;
 
 /**
  * @author Jean-Baptiste lemée
@@ -11,12 +11,22 @@ import play.mvc.results.RenderXml;
 public class RecommendizRController extends Controller {
 
    /**
-    * Return a 200 OK text/xml response
+    * Return a 200 OK application/atom+xml response
     *
     * @param feed The Atom feed object
     */
    protected static void renderAtomXml(SyndFeed feed) {
       SyndFeed _feed = feed;
       throw new RenderAtomXml(_feed);
+   }
+
+   /**
+    * Return a 200 OK application/atom+json response
+    *
+    * @param feed The Atom feed object
+    */
+   protected static void renderAtomJSon(SyndFeed feed) {
+      SyndFeed _feed = feed;
+      throw new RenderAtomJSon(_feed);
    }
 }
