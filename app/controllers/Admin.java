@@ -2,10 +2,10 @@ package controllers;
 
 import java.io.IOException;
 
-import services.SearchService;
 import play.Logger;
 import play.mvc.Controller;
 import play.mvc.With;
+import services.SearchService;
 
 /**
  * @author Jean-Baptiste lemée

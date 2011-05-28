@@ -1,8 +1,15 @@
 package controllers;
 
-import com.google.common.collect.Lists;
-import models.Liked;
-import models.User;
+import static Utils.Redis.newConnection;
+import static controllers.Application.findLiked;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.mahout.cf.taste.common.TasteException;
@@ -14,6 +21,8 @@ import org.apache.mahout.cf.taste.model.PreferenceArray;
 import org.apache.mahout.cf.taste.recommender.RecommendedItem;
 import org.apache.mahout.cf.taste.recommender.Recommender;
 
+import models.Liked;
+import models.User;
 import play.Logger;
 import play.mvc.Controller;
 import play.mvc.With;
@@ -21,12 +30,6 @@ import redis.clients.jedis.JedisCommands;
 import services.CrossingBooleanRecommenderBuilder;
 import services.CrossingDataModelBuilder;
 import services.SearchService;
-
-import java.io.IOException;
-import java.util.*;
-
-import static Utils.Redis.newConnection;
-import static controllers.Application.findLiked;
 
 @With(Secure.class)
 public class Reco extends Controller {

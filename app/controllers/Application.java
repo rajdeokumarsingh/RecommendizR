@@ -1,33 +1,51 @@
 package controllers;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import models.Liked;
-import models.User;
+import static Utils.Redis.newConnection;
+import static Utils.feed.AtomEntryConstructor.newEntry;
+import static Utils.feed.AtomFeedConstructor.cat;
+import static Utils.feed.AtomFeedConstructor.newFeed;
+import static Utils.feed.AtomFeedConstructor.self;
+import static Utils.feed.AtomFeedConstructor.text;
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Nullable;
+import javax.persistence.Query;
+
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.impl.common.FastByIDMap;
 import org.apache.mahout.cf.taste.impl.model.BooleanUserPreferenceArray;
 import org.apache.mahout.cf.taste.model.PreferenceArray;
 import org.apache.mahout.cf.taste.recommender.RecommendedItem;
+
+import Utils.feed.AtomFeedConstructor;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.sun.syndication.feed.synd.SyndEntry;
+import models.Liked;
+import models.User;
 import play.Logger;
 import play.db.jpa.JPA;
 import play.mvc.Controller;
-import redis.clients.jedis.Jedis;
+import play.mvc.Router;
 import redis.clients.jedis.JedisCommands;
 import services.SearchService;
 
-import javax.annotation.Nullable;
-import javax.persistence.Query;
-import java.io.IOException;
-import java.util.*;
-
-import static Utils.Redis.newConnection;
-import static org.apache.commons.collections.CollectionUtils.isEmpty;
-
-public class Application extends Controller {
+public class Application extends RecommendizRController {
 
    public static void index() {
       render();
@@ -43,7 +61,7 @@ public class Application extends Controller {
 
    public static void liked(Long id) {
       Liked liked = findLiked(id);
-      if(liked == null){
+      if (liked == null) {
          notFound();
       }
       User user = Security.connectedUser();
@@ -68,6 +86,43 @@ public class Application extends Controller {
       }
       Liked.fill(likedSet, Security.connectedUser(), newConnection());
       renderJSON(likedSet);
+   }
+
+   public static void searchfeed(String text) {
+      Set<Liked> likedSet = null;
+      try {
+         List<Liked> likedList = SearchService.search(text);
+         if (isEmpty(likedList)) {
+            likedSet = Sets.newHashSet();
+         } else {
+            likedSet = Sets.newHashSet(likedList);
+         }
+      } catch (IOException e) {
+         Logger.error(e, e.getMessage());
+         error(e.getMessage());
+      } catch (ParseException e) {
+         error(e.getMessage());
+      }
+      Liked.fill(likedSet, Security.connectedUser(), newConnection());
+      Map<String, Object> parametersMap = new HashMap<String, Object>(1);
+      parametersMap.put("text", text);
+      AtomFeedConstructor feedConstructor = newFeed()
+              .withEntries(getEntries(likedSet))
+              .withLinks(self(Router.getFullUrl("Application.searchfeed", parametersMap)));
+      renderAtomXml(feedConstructor.value());
+   }
+
+   private static List<SyndEntry> getEntries(Iterable<Liked> likedList) {
+      List<SyndEntry> entries = new ArrayList<SyndEntry>();
+      for (Liked liked : likedList) {
+
+         entries.add(newEntry(liked.name)
+                 .inCategories(cat("LIKED ITEM", null))
+                 .hasDescription(text(liked.description))
+                         //.withLinks(alternate(URL(liked.getId())))
+                 .value());
+      }
+      return entries;
    }
 
    public static void lastAdded(int howMany) {
