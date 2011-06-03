@@ -112,7 +112,7 @@ public class Application extends RecommendizRController {
       renderAtomJSon(feedConstructor.value());
    }
 
-   private static List<SyndEntry> getEntries(Iterable<Liked> likedList) {
+   static List<SyndEntry> getEntries(Iterable<Liked> likedList) {
       List<SyndEntry> entries = new ArrayList<SyndEntry>();
       for (Liked liked : likedList) {
 
@@ -129,6 +129,7 @@ public class Application extends RecommendizRController {
       User user = Security.connectedUser();
       JedisCommands jedis = newConnection();
       Collection<Liked> list = likedList(user, jedis, "recents");
+      Liked.fill(list, Security.connectedUser(), jedis);
       renderJSON(list);
    }
 
@@ -174,18 +175,29 @@ public class Application extends RecommendizRController {
    public static void mostLiked(int howMany) {
       User user = Security.connectedUser();
       JedisCommands jedis = newConnection();
-      List<Liked> list = Lists.newArrayList(likedList(user, jedis, "popular"));
-      Collections.sort(list, Collections.<Liked>reverseOrder());
+      List<Liked> list = likedList(user, jedis, "popular");
+      //Collections.sort(list, Collections.<Liked>reverseOrder());
+      Liked.fill(list, Security.connectedUser(), jedis);
       renderJSON(list);
    }
 
-   static Collection<Liked> likedList(User user, JedisCommands jedis, String listName) {
+   static List<Liked> PagedLikedList(List<Liked> likedList, int startIndex, int pageSize) {
+      if (null == likedList || likedList.size() < startIndex * pageSize) {
+         return Collections.emptyList();
+      } else if (likedList.size() < (startIndex * pageSize) + pageSize) {
+         return likedList.subList(startIndex * pageSize, likedList.size());
+      } else {
+         return likedList.subList(startIndex * pageSize, (startIndex * pageSize) + pageSize);
+      }
+
+   }
+
+   static List<Liked> likedList(User user, JedisCommands jedis, String listName) {
       final Map<String, String> relevantLikedMap = jedis.hgetAll(listName);
       if (relevantLikedMap == null || relevantLikedMap.size() == 0) {
          return new ArrayList<Liked>();
       } else {
          List<Liked> likedList = likedFromRelevantIds(relevantLikedMap.keySet());
-         Liked.fill(likedList, user, jedis);
          sortRelevantList(relevantLikedMap, likedList);
          return likedList;
       }

@@ -150,7 +150,7 @@ require.def("utils", ["jquery", "functional"], function($) {
       return this.replace(new RegExp('[^A-Z]*([A-Z]+).*', "g"), '$1');
    }
    /**
-    * Test if a string starts with another.
+    * JsonTest if a string starts with another.
     */
    String.prototype.startsWith = function(str) {
       return this.indexOf(str) === 0;

@@ -253,6 +253,7 @@ public class Reco extends Controller {
       User user = Security.connectedUser();
       JedisCommands jedis = newConnection();
       Collection<Liked> list = Application.likedList(user, jedis, "user:" + user.getId() + ":recents");
+      Liked.fill(list, user, jedis);
       renderJSON(list);
    }
 

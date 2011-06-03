@@ -1,6 +1,11 @@
 package models;
 
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.HashSet;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -8,12 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import play.test.UnitTest;
 import redis.clients.jedis.Jedis;
-
-import java.util.HashSet;
-
-import static junit.framework.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class LikedTest extends UnitTest {
    private static final Logger log = LoggerFactory.getLogger(LikedTest.class);

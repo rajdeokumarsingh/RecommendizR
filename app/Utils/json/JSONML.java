@@ -56,7 +56,7 @@ public class JSONML {
         Object     token;
         String	   tagName = null;
         
-// Test for and skip past these forms:
+// JsonTest for and skip past these forms:
 //      <!-- ... -->
 //      <![  ... ]]>
 //      <!   ...   >

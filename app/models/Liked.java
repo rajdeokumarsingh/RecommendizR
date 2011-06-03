@@ -50,10 +50,8 @@ public class Liked extends Model implements Comparable<Liked> {
    }
 
    public static Collection<Liked> fill(Collection<Liked> likedList, User user, JedisCommands jedis) {
-      if (user != null) {
-         for (Liked item : likedList) {
-            fill(item, user, jedis);
-         }
+      for (Liked item : likedList) {
+         fill(item, user, jedis);
       }
       return likedList;
    }

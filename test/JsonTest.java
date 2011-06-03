@@ -1,9 +1,22 @@
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.io.StringWriter;
+
+import Utils.json.CDL;
+import Utils.json.Cookie;
+import Utils.json.CookieList;
+import Utils.json.HTTP;
+import Utils.json.JSONArray;
+import Utils.json.JSONException;
+import Utils.json.JSONML;
+import Utils.json.JSONObject;
+import Utils.json.JSONString;
+import Utils.json.JSONStringer;
+import Utils.json.JSONTokener;
+import Utils.json.XML;
 import junit.framework.TestCase;
 
 /*
@@ -31,7 +44,7 @@ SOFTWARE.
 */
 
 /**
- * Test class. This file is not formally a member of the org.json library.
+ * JsonTest class. This file is not formally a member of the org.json library.
  * It is just a test tool.
  * 
  * Issue: JSONObject does not specify the ordering of keys, so simple-minded
@@ -40,8 +53,8 @@ SOFTWARE.
  * @author JSON.org
  * @version 2011-05-22
  */
-public class Test extends TestCase {
-    public Test(String name) {
+public class JsonTest extends TestCase {
+    public JsonTest(String name) {
         super(name);
     }
 
@@ -81,7 +94,7 @@ public class Test extends TestCase {
     public void testJSON() throws Exception {
     	double       eps = 2.220446049250313e-16;
         Iterator     iterator;
-        JSONArray    jsonarray;
+        JSONArray jsonarray;
         JSONObject   jsonobject;
         JSONStringer jsonstringer;
         Object       object;

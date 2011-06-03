@@ -27,7 +27,6 @@ public abstract class ControllersTest extends FunctionalTest {
    public void setup() {
       Fixtures.deleteDatabase();
       Fixtures.loadModels("data.yml");
-
    }
 
    /*
@@ -44,11 +43,19 @@ public abstract class ControllersTest extends FunctionalTest {
       Http.Request request = newRequest();
       Http.Cookie rememberme = new Http.Cookie();
       rememberme.value = Crypto.sign(username) + "-" + username;
+      rememberme.maxAge = 1;
       request.cookies.put("rememberme", rememberme);
       return request;
    }
 
    protected static Http.Response POST(Http.Request request, String url, Map<String, String> parameters) {
       return POST(request, url, parameters, new HashMap<String, File>());
+   }
+
+   protected Http.Response addLiked(String likedName, String likedDescription) {
+      Map<String, String> parameters = new HashMap<String, String>();
+      parameters.put("liked.name", likedName);
+      parameters.put("liked.description", likedDescription);
+      return POST(connectedRequest(), "/liked", parameters);
    }
 }

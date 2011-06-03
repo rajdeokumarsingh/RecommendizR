@@ -1630,7 +1630,7 @@ var require, define;
             node.setAttribute("data-requirecontext", contextName);
             node.setAttribute("data-requiremodule", moduleName);
 
-            //Set up load listener. Test attachEvent first because IE9 has
+            //Set up load listener. JsonTest attachEvent first because IE9 has
             //a subtle issue in its addEventListener and script onload firings
             //that do not match the behavior of all other browsers with
             //addEventListener support, which fire the onload event for a
@@ -1831,7 +1831,7 @@ var require, define;
                         //javascript in the iframe can't see anything outside
                         //of it, so self===self.top is true, but the iframe is
                         //not the top window and doScroll will be available
-                        //before document.body is set. Test document.body
+                        //before document.body is set. JsonTest document.body
                         //before trying the doScroll trick.
                         if (document.body) {
                             document.documentElement.doScroll("left");
@@ -3080,7 +3080,7 @@ jQuery.extend({
 		return _scriptEval;
 	};
 
-	// Test to see if it's possible to delete an expando from an element
+	// JsonTest to see if it's possible to delete an expando from an element
 	// Fails in Internet Explorer
 	try {
 		delete div.test;
@@ -9180,7 +9180,7 @@ jQuery.ajaxSettings.xhr = window.ActiveXObject ?
 	// For all other browsers, use the standard XMLHttpRequest object
 	createStandardXHR;
 
-// Test if we can create an xhr object
+// JsonTest if we can create an xhr object
 testXHR = jQuery.ajaxSettings.xhr();
 jQuery.support.ajax = !!testXHR;
 

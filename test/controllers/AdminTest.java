@@ -1,24 +1,11 @@
 package controllers;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import play.Play;
-import play.libs.Crypto;
 import play.mvc.Http;
-import play.mvc.Http.Cookie;
-import play.mvc.Http.Request;
 import play.mvc.Http.Response;
-import play.mvc.Http.StatusCode;
-import play.test.Fixtures;
-import play.test.FunctionalTest;
 
 public class AdminTest extends ControllersTest {
 
