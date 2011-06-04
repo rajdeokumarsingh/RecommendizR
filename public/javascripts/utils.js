@@ -19,102 +19,102 @@ require.def("utils", ["jquery", "functional"], function($) {
     * @see http://keithdevens.com/weblog/archive/2007/Jun/07/javascript.clone
     */
    jQuery.extend({
-      /**
-       * Generic aggregate core function.
-       */
-      aggregate: function(f, seed, list) {
-         var result = seed;
-         for (var index in list) {
-            result = f(list[index], result);
-         }
-         return result;
-      },
+              /**
+               * Generic aggregate core function.
+               */
+              aggregate: function(f, seed, list) {
+                 var result = seed;
+                 for (var index in list) {
+                    result = f(list[index], result);
+                 }
+                 return result;
+              },
 
-      /**
-       * String joinWith method.
-       */
-      joinWith: function(separator, selector, elements) {
-         return $.aggregate(function(e, r) {
-            return r == null ? selector(e) : r + separator + selector(e);
-         }, null, elements);
-      },
+              /**
+               * String joinWith method.
+               */
+              joinWith: function(separator, selector, elements) {
+                 return $.aggregate(function(e, r) {
+                    return r == null ? selector(e) : r + separator + selector(e);
+                 }, null, elements);
+              },
 
-      groupBy: function(fn, elements) {
-         if (!elements) return elements;
+              groupBy: function(fn, elements) {
+                 if (!elements) return elements;
 
-         if (!fn || typeof (fn) !== typeof (Function)) {
-            throw Error.argumentType("fn", typeof (fn), typeof (Function), "groupBy takes a function to filter on");
-         }
-         var ret = new Array();
-         for (var i = 0; i < elements.length; i++) {
-            var key = fn(elements[i]);
-            if (!ret[key]) {
-               ret[key] = new Array();
-            }
-            ret[key].push(elements[i]);
-         }
-         var result = new Array();
-         var counter = 0;
-         for (var k in ret) {
-            result[counter] = {"key":k,"items":ret[k]};
-            counter++;
-         }
-         return result;
-      },
+                 if (!fn || typeof (fn) !== typeof (Function)) {
+                    throw Error.argumentType("fn", typeof (fn), typeof (Function), "groupBy takes a function to filter on");
+                 }
+                 var ret = new Array();
+                 for (var i = 0; i < elements.length; i++) {
+                    var key = fn(elements[i]);
+                    if (!ret[key]) {
+                       ret[key] = new Array();
+                    }
+                    ret[key].push(elements[i]);
+                 }
+                 var result = new Array();
+                 var counter = 0;
+                 for (var k in ret) {
+                    result[counter] = {"key":k,"items":ret[k]};
+                    counter++;
+                 }
+                 return result;
+              },
 
-      objectSize: function(obj) {
-         var size = 0, key;
-         for (key in obj) if (obj.hasOwnProperty(key)) size++;
-         return size;
-      },
+              objectSize: function(obj) {
+                 var size = 0, key;
+                 for (key in obj) if (obj.hasOwnProperty(key)) size++;
+                 return size;
+              },
 
-      /**
-       * Retrieve an specific parameter from the current URL.
-       */
-      getUrlParam: function(name) {
-         var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
-         return results ? results[1] || 0 : null;
-      },
+              /**
+               * Retrieve an specific parameter from the current URL.
+               */
+              getUrlParam: function(name) {
+                 var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                 return results ? results[1] || 0 : null;
+              },
 
-      /**
-       * Verify if the parameter is null or empty.
-       */
-      isEmpty: function(str) {
-         return (str == null || str.length == 0) ? true : false;
-      },
+              /**
+               * Verify if the parameter is null or empty.
+               */
+              isEmpty: function(str) {
+                 return (str == null || str.length == 0) ? true : false;
+              },
 
-      /**
-       * Validate an url based on some valid protocols.
-       */
-      validProtocol: function(path) {
-         if ($.isEmpty(path)) return false;
-         return some("'" + path + "'.startsWith(_)", ["http", "ftp"]);
-      },
+              /**
+               * Validate an url based on some valid protocols.
+               */
+              validProtocol: function(path) {
+                 if ($.isEmpty(path)) return false;
+                 return some("'" + path + "'.startsWith(_)", ["http", "ftp"]);
+              },
 
-      /**
-       * Simple filed validation with custom function.
-       */
-      validate: function(json) {
-         $(".validateError").remove();
-         return reduce("x y -> x && y", true, map(function(validation) {
-            var valid = validation.validate($("#" + validation.name).val());
-            if (!valid) $("#" + validation.name).after("&nbsp;<span class='validateError'>" + validation.message + "</span>");
-            return valid;
-         }, json.validations));
-      }
+              /**
+               * Simple filed validation with custom function.
+               */
+              validate: function(json) {
+                 $(".validateError").remove();
+                 return reduce("x y -> x && y", true, map(function(validation) {
+                    var valid = validation.validate($("#" + validation.name).val());
+                    if (!valid) $("#" + validation.name).after("&nbsp;<span class='validateError'>" + validation.message + "</span>");
+                    return valid;
+                 }, json.validations));
+              }
 
-   });
+           });
 
    /**
     * Retrieve the direct text of an element and not the text of its possible children (nodes).
     */
    jQuery.fn.extend({
-      innerText: function() {
-         return this.contents().filter(function() {
-            return this.nodeType != 1;
-         });
-      }
-   });
+              innerText: function() {
+                 return this.contents().filter(function() {
+                    return this.nodeType != 1;
+                 });
+              }
+           });
 
    /**
     * Repeat function.
@@ -363,6 +363,13 @@ require.def("utils", ["jquery", "functional"], function($) {
 
       "escape": function (str) {
          return str.replace(/([#;&,\.\+\*\~':"\!\^$\[\]\(\)=>\|])/g, "\\$1");
+      },
+
+      "linkify": function(text) {
+         var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+         return text.replace(exp, "<a href='$1'>$1</a>")
+                 .replace(/@(\w+)/ig, "<a href='http://twitter.com/$1'>@$1</a>")
+                 .replace(/(#[^\s]+)/ig, "<a href='http://twitter.com/search?q=$1'>$1</a>");
       }
 
    };

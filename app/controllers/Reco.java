@@ -162,7 +162,7 @@ public class Reco extends Controller {
       if (StringUtils.isEmpty(liked.name) || StringUtils.isEmpty(liked.description)) {
          badRequest();
       }
-      liked.transformPlainUrlToHtml();
+      //liked.transformPlainUrlToHtml();
       liked.save();
       User user = Security.connectedUser();
       JedisCommands jedis = newConnection();
