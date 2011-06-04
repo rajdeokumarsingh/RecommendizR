@@ -383,4 +383,11 @@ public class FakeJedis implements JedisCommands {
    public Long linsert(String s, BinaryClient.LIST_POSITION list_position, String s1, String s2) {
       throw new UnsupportedOperationException();
    }
+
+   public static void reset() {
+      basicMap.clear();
+      namedMap.clear();
+      namedSet.clear();
+      namedLinkedList.clear();
+   }
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import Utils.FakeJedis;
 import play.Play;
 import play.libs.Crypto;
 import play.mvc.Http;
@@ -26,6 +27,7 @@ public abstract class ControllersTest extends FunctionalTest {
    @Before
    public void setup() {
       Fixtures.deleteDatabase();
+      FakeJedis.reset();
       Fixtures.loadModels("data.yml");
    }
 
@@ -51,6 +53,11 @@ public abstract class ControllersTest extends FunctionalTest {
    protected static Http.Response POST(Http.Request request, String url, Map<String, String> parameters) {
       return POST(request, url, parameters, new HashMap<String, File>());
    }
+
+   public static Http.Response PUT(Http.Request request, Object url, String c) {
+      return PUT(request, url, APPLICATION_X_WWW_FORM_URLENCODED, "");
+   }
+
 
    protected Http.Response addLiked(String likedName, String likedDescription) {
       Map<String, String> parameters = new HashMap<String, String>();

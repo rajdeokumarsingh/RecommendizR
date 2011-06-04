@@ -5,6 +5,14 @@
    email: test@test.com
    twitter: test
 
+ User(test2):
+   email: test2@test2.com
+   twitter: test2
+
+ User(test3):
+   email: test3@test3.com
+   twitter: test3
+
  User(admin):
    email: jblemee@gmail.com
    twitter: jblemee

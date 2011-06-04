@@ -19,9 +19,13 @@ GET		/liked/{id}								      Application.liked
 GET		/home    								      Application.home
 
 POST     /liked                                 Reco.addLiked
+PUT      /like                                  Reco.like
+PUT      /ignore                                Reco.ignore
+POST     /like                                  Reco.switchLike
+POST     /ignore                                Reco.switchIgnore
 
 # Secure routes
-GET      /logout         						      Secure.logout
+*        /logout         						      Secure.logout
 
 # Catch all
 *        /{controller}/{action}                 {controller}.{action}

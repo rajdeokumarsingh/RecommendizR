@@ -41,6 +41,7 @@ require.def("widgets/twostatesbutton", ["jquery", "utils"], function($, Utils) {
                url: switchResource,
                data: data,
                success: onSuccessSwitch,
+               type:'POST',
                error: function() {
                   drawWidget(containerId);
                }
