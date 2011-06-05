@@ -1,13 +1,10 @@
-package Utils;
+package utils;
 
-import static Utils.Redis.newConnection;
+import static utils.Redis.newConnection;
 
 import com.restfb.FacebookClient;
 import models.User;
-import models.oauthclient.Credentials;
 import play.Play;
-import play.libs.WS;
-import play.libs.XML;
 import play.modules.facebook.FbGraph;
 import play.modules.oauthclient.OAuthClient;
 

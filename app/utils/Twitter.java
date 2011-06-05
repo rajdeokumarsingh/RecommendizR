@@ -1,6 +1,6 @@
-package Utils;
+package utils;
 
-import static Utils.Redis.newConnection;
+import static utils.Redis.newConnection;
 
 import models.User;
 import models.oauthclient.Credentials;

@@ -1,4 +1,4 @@
-package Utils.feed;
+package utils.feed;
 
 import com.sun.syndication.feed.module.Module;
 import com.sun.syndication.feed.module.opensearch.OpenSearchModule;

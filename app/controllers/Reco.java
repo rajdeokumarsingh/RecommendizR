@@ -1,6 +1,6 @@
 package controllers;
 
-import static Utils.Redis.newConnection;
+import static utils.Redis.newConnection;
 import static controllers.Application.findLiked;
 
 import java.io.IOException;

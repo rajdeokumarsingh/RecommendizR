@@ -1,4 +1,4 @@
-package Utils;
+package utils;
 
 import play.Play;
 import redis.clients.jedis.Jedis;

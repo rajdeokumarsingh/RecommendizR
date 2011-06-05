@@ -1,4 +1,4 @@
-package Utils.json;
+package utils.json;
 
 /*
 Copyright (c) 2008 JSON.org

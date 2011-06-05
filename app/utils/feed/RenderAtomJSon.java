@@ -1,9 +1,7 @@
-package Utils.feed;
+package utils.feed;
 
-import org.w3c.dom.Document;
-
-import Utils.json.JSONException;
-import Utils.json.XML;
+import utils.json.JSONException;
+import utils.json.XML;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedOutput;

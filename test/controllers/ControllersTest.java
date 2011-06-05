@@ -7,7 +7,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import Utils.FakeJedis;
+import utils.FakeJedis;
 import play.Play;
 import play.libs.Crypto;
 import play.mvc.Http;

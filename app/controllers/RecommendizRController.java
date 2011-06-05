@@ -1,7 +1,7 @@
 package controllers;
 
-import Utils.feed.RenderAtomJSon;
-import Utils.feed.RenderAtomXml;
+import utils.feed.RenderAtomJSon;
+import utils.feed.RenderAtomXml;
 import com.sun.syndication.feed.synd.SyndFeed;
 import play.mvc.Controller;
 

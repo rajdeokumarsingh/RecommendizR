@@ -1,4 +1,4 @@
-package Utils;
+package utils;
 
 /**
  * @author Jean-Baptiste lemée

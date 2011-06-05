@@ -1,13 +1,11 @@
 package models;
 
 import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import Utils.ObjectUtils;
+import utils.ObjectUtils;
 import play.data.validation.MaxSize;
 import play.data.validation.MinSize;
 import play.data.validation.Required;

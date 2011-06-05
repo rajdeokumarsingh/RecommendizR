@@ -1,11 +1,11 @@
 package controllers;
 
-import static Utils.Redis.newConnection;
-import static Utils.feed.AtomEntryConstructor.newEntry;
-import static Utils.feed.AtomFeedConstructor.cat;
-import static Utils.feed.AtomFeedConstructor.newFeed;
-import static Utils.feed.AtomFeedConstructor.self;
-import static Utils.feed.AtomFeedConstructor.text;
+import static utils.Redis.newConnection;
+import static utils.feed.AtomEntryConstructor.newEntry;
+import static utils.feed.AtomFeedConstructor.cat;
+import static utils.feed.AtomFeedConstructor.newFeed;
+import static utils.feed.AtomFeedConstructor.self;
+import static utils.feed.AtomFeedConstructor.text;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 
 import java.io.IOException;
@@ -30,17 +30,15 @@ import org.apache.mahout.cf.taste.impl.model.BooleanUserPreferenceArray;
 import org.apache.mahout.cf.taste.model.PreferenceArray;
 import org.apache.mahout.cf.taste.recommender.RecommendedItem;
 
-import Utils.feed.AtomFeedConstructor;
+import utils.feed.AtomFeedConstructor;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.sun.syndication.feed.synd.SyndEntry;
 import models.Liked;
 import models.User;
 import play.Logger;
 import play.db.jpa.JPA;
-import play.mvc.Controller;
 import play.mvc.Router;
 import redis.clients.jedis.JedisCommands;
 import services.SearchService;
@@ -125,7 +123,7 @@ public class Application extends RecommendizRController {
       return entries;
    }
 
-   public static void lastAdded(int howMany) {
+   public static void lastAdded(int startIndex, int pageSize) {
       User user = Security.connectedUser();
       JedisCommands jedis = newConnection();
       Collection<Liked> list = likedList(user, jedis, "recents");
@@ -176,7 +174,6 @@ public class Application extends RecommendizRController {
       User user = Security.connectedUser();
       JedisCommands jedis = newConnection();
       List<Liked> list = likedList(user, jedis, "popular");
-      //Collections.sort(list, Collections.<Liked>reverseOrder());
       Liked.fill(list, Security.connectedUser(), jedis);
       renderJSON(list);
    }

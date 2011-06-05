@@ -1,11 +1,11 @@
 package controllers;
 
-import static Utils.Redis.newConnection;
+import static utils.Redis.newConnection;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import Utils.Twitter;
+import utils.Twitter;
 import com.google.gson.JsonObject;
 import models.User;
 import models.oauthclient.Credentials;

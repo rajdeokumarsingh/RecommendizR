@@ -1,4 +1,4 @@
-package Utils.feed;
+package utils.feed;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -7,7 +7,6 @@ import java.io.StringWriter;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedOutput;
-import com.thoughtworks.xstream.XStream;
 import play.Logger;
 import play.exceptions.UnexpectedException;
 import play.mvc.Http.Request;
