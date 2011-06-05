@@ -19,37 +19,59 @@
    <aside id="search-results" style="display:none;"><h4>Search results :</h4>
 
       <div class="list" id="search-results-list"></div>
+      <a id="search-results-prev" href="#">prev</a>
+      <a id="search-results-next" href="#">next</a>
    </aside>
 
    <aside>
       <h4>Stuff you should like :</h4>
       <a class="connected" id="user-recommendations-refresh" href="#">refresh</a>
+
       <div class="connected list" id="user-recommendations"></div>
       <div class="not-connected list">
          <p>To get personnal recommendations, based on what you like, please signin</p>
       </div>
+
+      <a id="user-recommendations-prev" href="#">prev</a>
+      <a id="user-recommendations-next" href="#">next</a>
    </aside>
 
    <div>
       <h4>People who like that, also like :</h4>
       <a id="related-refresh" href="#">refresh</a>
+
       <div id="related" class="list"></div>
+
+      <a id="related-prev" href="#">prev</a>
+      <a id="related-next" href="#">next</a>
    </div>
 
    <aside class="connected">
       <h4>Stuff you like recently :</h4>
       <a id="recentlikedbyuser-refresh" href="#">refresh</a>
+
       <div class="connected list" id="recentlikedbyuser"></div>
+
+      <a id="recentlikedbyuser-prev" href="#">prev</a>
+      <a id="recentlikedbyuser-next" href="#">next</a>
    </aside>
 
    <aside><h4>Recent stuff :</h4>
       <a id="recents-refresh" href="#">refresh</a>
+
       <div id="recents" class="list"></div>
+
+      <a id="recents-prev" href="#">prev</a>
+      <a id="recents-next" href="#">next</a>
    </aside>
 
    <aside><h4>Popular stuff :</h4>
       <a id="populars-refresh" href="#">refresh</a>
+
       <div id="populars" class="list"></div>
+
+      <a id="populars-prev" href="#">prev</a>
+      <a id="populars-next" href="#">next</a>
    </aside>
 
 </section>
@@ -66,22 +88,28 @@
             e.preventDefault();
             $('#search-results').show();
             var searchText = $('#search-input').val();
-            LikedList.Instance('search-results-list', '@{Application.search()}', {limit:10,text: searchText}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
+            LikedList.Instance('search-results-list', '@{Application.search()}', {pageSize:"5", startIndex:"1", text: searchText}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
          });
-         var recentsLiked = new LikedList.Instance('recents', '@{Application.lastAdded()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
-         var popularsLiked = new LikedList.Instance('populars', '@{Application.mostLiked()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
-         var relatedLiked = new LikedList.Instance('related', '@{Application.recommendFromLiked()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
+         var recentsLiked = new LikedList.Instance('recents', '@{Application.lastAdded()}', {pageSize:"5", startIndex:"1"}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
+         var popularsLiked = new LikedList.Instance('populars', '@{Application.mostLiked()}', {pageSize:"5", startIndex:"1"}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
+         var relatedLiked = new LikedList.Instance('related', '@{Application.recommendFromLiked()}', {pageSize:"5", startIndex:"1"}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
 
          var likedPageUrl = #{jsAction @Application.liked(':likedId') /};
 
          var onConnectedUser = function(username) {
             Login.withConnectedUserDefault(username);
-            var userRecommendations = LikedList.Instance('user-recommendations', '@{Reco.recommendUser()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
-            var recentLikedByUser = new LikedList.Instance('recentlikedbyuser', '@{Reco.recentUserLiked(0,9)}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
+            var userRecommendations = LikedList.Instance('user-recommendations', '@{Reco.recommendUser()}', {pageSize:"5", startIndex:"1"}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
+            var recentLikedByUser = new LikedList.Instance('recentlikedbyuser', '@{Reco.recentUserLiked()}', {pageSize:"5", startIndex:"1"}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
             var likedAddBox = new LikedAddBox.Instance('add-liked', '@{Reco.addLiked()}');
-            likedAddBox.onLikedAdded.add(recentsLiked.refresh);
-            likedAddBox.onLikedAdded.add(popularsLiked.refresh);
-            likedAddBox.onLikedAdded.add(recentLikedByUser.refresh);
+            likedAddBox.onLikedAdded.add(function(newLiked) {
+               recentsLiked.refresh()
+            });
+            likedAddBox.onLikedAdded.add(function(newLiked) {
+               popularsLiked.refresh()
+            });
+            likedAddBox.onLikedAdded.add(function(newLiked) {
+               recentLikedByUser.refresh()
+            });
             likedAddBox.onLikedAdded.add(function(newLiked) {
                $.history.load(likedPageUrl({likedId: newLiked.id}));
             });

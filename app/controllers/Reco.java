@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +31,7 @@ import redis.clients.jedis.JedisCommands;
 import services.CrossingBooleanRecommenderBuilder;
 import services.CrossingDataModelBuilder;
 import services.SearchService;
+import utils.paging.Paging;
 
 @With(Secure.class)
 public class Reco extends Controller {
@@ -185,15 +187,15 @@ public class Reco extends Controller {
       return Liked.isIgnored(likedId, user, newConnection());
    }
 
-   public static void recommendUser(int limit) throws TasteException {
+   public static void recommendUser(int startIndex, int pageSize) throws TasteException {
       User user = Security.connectedUser();
       JedisCommands jedis = newConnection();
       int trainUsersLimit = 100;
       Map<String, String> ignoreList = jedis.hgetAll("ignore:u" + user.id);
       FastByIDMap<PreferenceArray> usersData = usersData(jedis, trainUsersLimit, ignoreList.keySet());
       usersData.put(user.id, getPreferences(jedis, trainUsersLimit++, user.id, new HashSet<String>()));
-      List<RecommendedItem> recommendedItems = _internalRecommend(limit, user.id, usersData);
-      Set<Liked> likedSet = new HashSet<Liked>(recommendedItems.size());
+      List<RecommendedItem> recommendedItems = Paging.perform(_internalRecommend(startIndex * pageSize, user.id, usersData), startIndex, pageSize).getContent();
+      Set<Liked> likedSet = new LinkedHashSet<Liked>(recommendedItems.size());
       for (RecommendedItem item : recommendedItems) {
          Liked liked = findLiked(item.getItemID());
          if (liked != null) {
@@ -245,14 +247,10 @@ public class Reco extends Controller {
       return (null != Security.findUser(user.email));
    }
 
-   public static void lastAdded(int howMany) {
-
-   }
-
-   public static void recentUserLiked(int start, int stop) {
+   public static void recentUserLiked(int startIndex, int pageSize) {
       User user = Security.connectedUser();
       JedisCommands jedis = newConnection();
-      Collection<Liked> list = Application.likedList(user, jedis, "user:" + user.getId() + ":recents");
+      List<Liked> list = Application.likedList(jedis, "user:" + user.getId() + ":recents", startIndex, pageSize).getContent();
       Liked.fill(list, user, jedis);
       renderJSON(list);
    }

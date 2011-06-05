@@ -47,6 +47,18 @@ require.def("widgets/likedlist", ["jquery", "utils", "widgets/twostatesbutton"],
             e.preventDefault();
             self.refresh();
          });
+
+         $("#" + containerId + "-next").click(function(e) {
+            e.preventDefault();
+            data.startIndex++;
+            self.refresh(data);
+         });
+
+         $("#" + containerId + "-prev").click(function(e) {
+            e.preventDefault();
+            data.startIndex--;
+            self.refresh(data);
+         });
       }
    };
 

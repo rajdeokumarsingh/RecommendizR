@@ -42,6 +42,8 @@ import play.db.jpa.JPA;
 import play.mvc.Router;
 import redis.clients.jedis.JedisCommands;
 import services.SearchService;
+import utils.paging.PagedContent;
+import utils.paging.Paging;
 
 public class Application extends RecommendizRController {
 
@@ -67,14 +69,14 @@ public class Application extends RecommendizRController {
       render(liked);
    }
 
-   public static void search(String text) {
+   public static void search(String text, int startIndex, int pageSize) {
       Set<Liked> likedSet = null;
       try {
-         List<Liked> likedList = SearchService.search(text);
+         List<Liked> likedList = Paging.perform(SearchService.search(text), startIndex, pageSize).getContent();
          if (isEmpty(likedList)) {
             likedSet = Sets.newHashSet();
          } else {
-            likedSet = Sets.newHashSet(likedList);
+            likedSet = Sets.newLinkedHashSet(likedList);
          }
       } catch (IOException e) {
          Logger.error(e, e.getMessage());
@@ -86,7 +88,7 @@ public class Application extends RecommendizRController {
       renderJSON(likedSet);
    }
 
-   public static void searchfeed(String text) {
+   public static void searchfeed(String text, int startIndex, int pageSize) {
       Set<Liked> likedSet = null;
       try {
          List<Liked> likedList = SearchService.search(text);
@@ -124,14 +126,13 @@ public class Application extends RecommendizRController {
    }
 
    public static void lastAdded(int startIndex, int pageSize) {
-      User user = Security.connectedUser();
       JedisCommands jedis = newConnection();
-      Collection<Liked> list = likedList(user, jedis, "recents");
+      List<Liked> list = likedList(jedis, "recents", startIndex, pageSize).getContent();
       Liked.fill(list, Security.connectedUser(), jedis);
       renderJSON(list);
    }
 
-   public static void recommendFromLiked(int limit, Long likedId) throws TasteException {
+   public static void recommendFromLiked(int startIndex, int pageSize, Long likedId) throws TasteException {
       if (likedId == null) {
          renderJSON(Sets.<Object>newHashSet());
       }
@@ -143,7 +144,7 @@ public class Application extends RecommendizRController {
       preferenceArray.setUserID(0, userId);
       preferenceArray.setItemID(0, likedId);
       usersData.put(userId, preferenceArray);
-      List<RecommendedItem> recommendedItems = Reco._internalRecommend(limit, userId, usersData);
+      List<RecommendedItem> recommendedItems = Reco._internalRecommend(startIndex * pageSize, userId, usersData);
       Set<Liked> likedSet = new HashSet<Liked>(recommendedItems.size());
       for (RecommendedItem item : recommendedItems) {
          Liked liked = findLiked(item.getItemID());
@@ -160,7 +161,7 @@ public class Application extends RecommendizRController {
          return likedCol;
       } else {
          Map<String, String> ignoreList = jedis.hgetAll("ignore:u" + user.id);
-         for (Iterator<Liked> iter = likedCol.iterator(); iter.hasNext();) {
+         for (Iterator<Liked> iter = likedCol.iterator(); iter.hasNext(); ) {
             Liked liked = iter.next();
             if (ignoreList.containsKey("like:l" + liked.id)) {
                iter.remove();
@@ -170,10 +171,9 @@ public class Application extends RecommendizRController {
       }
    }
 
-   public static void mostLiked(int howMany) {
-      User user = Security.connectedUser();
+   public static void mostLiked(int startIndex, int pageSize) {
       JedisCommands jedis = newConnection();
-      List<Liked> list = likedList(user, jedis, "popular");
+      List<Liked> list = likedList(jedis, "popular", startIndex, pageSize).getContent();
       Liked.fill(list, Security.connectedUser(), jedis);
       renderJSON(list);
    }
@@ -189,14 +189,14 @@ public class Application extends RecommendizRController {
 
    }
 
-   static List<Liked> likedList(User user, JedisCommands jedis, String listName) {
+   static PagedContent<Liked> likedList(JedisCommands jedis, String listName, int startIndex, int pageSize) {
       final Map<String, String> relevantLikedMap = jedis.hgetAll(listName);
       if (relevantLikedMap == null || relevantLikedMap.size() == 0) {
-         return new ArrayList<Liked>();
+         return Paging.perform(new ArrayList<Liked>(), startIndex, pageSize);
       } else {
          List<Liked> likedList = likedFromRelevantIds(relevantLikedMap.keySet());
          sortRelevantList(relevantLikedMap, likedList);
-         return likedList;
+         return Paging.perform(likedList, startIndex, pageSize);
       }
    }
 
