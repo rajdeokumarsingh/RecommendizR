@@ -16,6 +16,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -144,8 +145,8 @@ public class Application extends RecommendizRController {
       preferenceArray.setUserID(0, userId);
       preferenceArray.setItemID(0, likedId);
       usersData.put(userId, preferenceArray);
-      List<RecommendedItem> recommendedItems = Reco._internalRecommend(startIndex * pageSize, userId, usersData);
-      Set<Liked> likedSet = new HashSet<Liked>(recommendedItems.size());
+      List<RecommendedItem> recommendedItems = Paging.perform(Reco._internalRecommend(startIndex * pageSize, userId, usersData), startIndex, pageSize).getContent();
+      Set<Liked> likedSet = new LinkedHashSet<Liked>(recommendedItems.size());
       for (RecommendedItem item : recommendedItems) {
          Liked liked = findLiked(item.getItemID());
          if (liked != null) {
