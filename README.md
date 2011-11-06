@@ -8,7 +8,8 @@ See an example here : http://www.recommendizr.fr
 Installation
 ----------------
 
-* Install Play! Framework 1.2 http://www.playframework.com
+* Install Java 1.6.x (java 1.7.x doesnt work)
+* Install Play! Framework 1.2.x http://www.playframework.com
 * Install Redis 2.x.x
 * Install MySQl or another SQL Databases Server
 * clone this repository
