@@ -15,3 +15,4 @@ require:
     - rome -> rome 1.0
     - com.sun.syndication -> rome-modules 1.0
     - jdom -> jdom 1.1
+    - com.google.guava -> guava 13.0.1

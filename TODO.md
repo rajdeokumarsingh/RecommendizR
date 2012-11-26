@@ -3,7 +3,6 @@ RecommendizR - TODO List
 
 * API with ATOM / REST.
 * Paged all lists with links previous and next
-* Support Cross Origin Resources Sharing (CORS)
 * Application for mobile (At least android and iOS) with authentification and all lists and view items and comments.
 * Be able to bookmark searches (and add it to navigation history).
 * Be able to modify a description (Only the user who owned the item)

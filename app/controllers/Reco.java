@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,6 +27,7 @@ import models.Liked;
 import models.User;
 import play.Logger;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.With;
 import redis.clients.jedis.JedisCommands;
 import services.CrossingBooleanRecommenderBuilder;
@@ -40,7 +42,7 @@ public class Reco extends Controller {
       User user = Security.connectedUser();
       JedisCommands jedis = newConnection();
       if (!Liked.isLiked(likedId, user, jedis)) {
-         doLike(likedId, user, jedis);
+         doLike(likedId, String.valueOf(user.id), jedis);
       }
       if (Liked.isIgnored(likedId, user, jedis)) {
          doUnignore(likedId, user, jedis);
@@ -61,15 +63,15 @@ public class Reco extends Controller {
       renderJSON(Liked.fill(Collections.singleton(findLiked(likedId)), user, jedis));
    }
 
-   static void doLike(Long likedId, User user, JedisCommands jedis) {
+   static void doLike(Long likedId, String userId, JedisCommands jedis) {
       Long count = jedis.hincrBy("l" + likedId, "count", 1);
       manageRelevantList(likedId, count, jedis, "popular", 100);
       manageRelevantList(likedId, System.currentTimeMillis(), jedis, "recents", 100);
-      manageRelevantList(likedId, System.currentTimeMillis(), jedis, "user:" + user.getId() + ":recents", 100);
-      jedis.hset("u" + user.id, "like:l" + likedId, String.valueOf(likedId));
+      manageRelevantList(likedId, System.currentTimeMillis(), jedis, "user:" + userId + ":recents", 100);
+      jedis.hset("u" + userId, "like:l" + likedId, String.valueOf(likedId));
 
       // Useless ?
-      jedis.hset("l" + likedId, "user:u" + user.id, String.valueOf(user.id));
+      jedis.hset("l" + likedId, "user:u" + userId, String.valueOf(userId));
    }
 
    static void doIgnore(Long likedId, User user, JedisCommands jedis) {
@@ -138,7 +140,7 @@ public class Reco extends Controller {
       if (Liked.isLiked(likedId, user, jedis)) {
          doUnlike(likedId, user, jedis);
       } else {
-         doLike(likedId, user, jedis);
+         doLike(likedId, String.valueOf(user.id), jedis);
          if (Liked.isIgnored(likedId, user, jedis)) {
             doUnignore(likedId, user, jedis);
          }
@@ -164,20 +166,32 @@ public class Reco extends Controller {
       if (StringUtils.isEmpty(liked.name) || StringUtils.isEmpty(liked.description)) {
          badRequest();
       }
-      //liked.transformPlainUrlToHtml();
       liked.save();
       User user = Security.connectedUser();
       JedisCommands jedis = newConnection();
-      doLike(liked.id, user, jedis);
       try {
          SearchService.addToIndex(liked);
       } catch (IOException e) {
          Logger.error(e, e.getMessage());
       }
+      if(Secure.callFromExternalWebSite()) {
+          doCORS();
+          doLike(liked.id, request.headers.get("origin").value(), jedis);
+      } else {
+          doLike(liked.id, String.valueOf(user.id), jedis);
+      }
       renderJSON(Liked.fill(liked, user, jedis));
    }
 
-   public static boolean isLiked(Long likedId) {
+    private static void doCORS() {
+        Http.Header hd = new Http.Header();
+        hd.name = "Access-Control-Allow-Origin";
+        hd.values = new ArrayList<String>();
+        hd.values.add(request.headers.get("origin").value());
+        Http.Response.current().headers.put("Access-Control-Allow-Origin", hd);
+    }
+
+    public static boolean isLiked(Long likedId) {
       User user = Security.connectedUser();
       return Liked.isLiked(likedId, user, newConnection());
    }

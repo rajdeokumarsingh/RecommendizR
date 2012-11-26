@@ -3,6 +3,7 @@ package controllers;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import models.User;
 import play.Play;
 import play.libs.Crypto;
@@ -11,6 +12,8 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.utils.Java;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 public class Secure extends Controller {
 
    public final static String LOGIN_KEY = "username";
@@ -18,7 +21,7 @@ public class Secure extends Controller {
    @Before(unless = {"login", "authenticate", "logout"})
    static void checkAccess() throws Throwable {
       // Authent
-      if (Security.invoke("connectedUser") == null) {
+    if (!callFromExternalWebSite() && Security.invoke("connectedUser") == null) {
          session.clear();
          response.removeCookie("rememberme");
          flash.put("url", request.method == "GET" ? request.url : "/"); // seems a good default
@@ -84,13 +87,30 @@ public class Secure extends Controller {
       return session.get(LOGIN_KEY);
    }
 
-   /**
+    public static boolean callFromExternalWebSite() {
+        if(null == request.headers.get("origin")) {
+            return false;
+        } else {
+            String caller = request.headers.get("origin").value();
+            return caller!=null && !request.host.equals(caller) && isAuthorized(caller);
+        }
+    }
+
+    private static boolean isAuthorized(String caller) {
+        return caller.equals("livecoders.com") || devMode();
+    }
+
+    private static boolean devMode() {
+        return request.domain.equals("localhost");
+    }
+
+    /**
     * Indicate if a user is currently connected
     * 
     * @return true if the user is connected
     */
    static boolean isConnected() {
-      return session.contains(LOGIN_KEY);
+      return session.contains(LOGIN_KEY) || callFromExternalWebSite();
    }
 
    static void autoConnect() {

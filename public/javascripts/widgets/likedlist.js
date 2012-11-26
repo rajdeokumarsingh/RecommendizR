@@ -14,7 +14,7 @@ require.def("widgets/likedlist", ["jquery", "utils", "widgets/twostatesbutton"],
                success: onSuccess.curry(containerId, isLikedResource, switchlikeResource, switchIgnoreResource),
                error: onError.curry(containerId)
             });
-         }
+         };
 
          var onSuccess = function(containerId, isLikedResource, switchLikeResource, switchIgnoreResource, likedList) {
             if (likedList.length == 0) {
